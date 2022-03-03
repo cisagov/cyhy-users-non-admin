@@ -1,6 +1,6 @@
-# skeleton-tf-module #
+# cyhy-users-non-admin #
 
-[![GitHub Build Status](https://github.com/cisagov/skeleton-tf-module/workflows/build/badge.svg)](https://github.com/cisagov/skeleton-tf-module/actions)
+[![GitHub Build Status](https://github.com/cisagov/cyhy-users-non-admin/workflows/build/badge.svg)](https://github.com/cisagov/cyhy-users-non-admin/actions)
 
 This is a generic skeleton project that can be used to quickly get a
 new [cisagov](https://github.com/cisagov) [Terraform
@@ -18,7 +18,7 @@ details on Terraform modules and the standard module structure.
 
 ```hcl
 module "example" {
-  source = "github.com/cisagov/skeleton-tf-module"
+  source = "github.com/cisagov/cyhy-users-non-admin"
 
   aws_region            = "us-west-1"
   aws_availability_zone = "b"
@@ -28,7 +28,7 @@ module "example" {
 
 ## Examples ##
 
-- [Basic usage](https://github.com/cisagov/skeleton-tf-module/tree/develop/examples/basic_usage)
+- [Basic usage](https://github.com/cisagov/cyhy-users-non-admin/tree/develop/examples/basic_usage)
 
 ## Requirements ##
 
