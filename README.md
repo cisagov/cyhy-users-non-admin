@@ -2,33 +2,34 @@
 
 [![GitHub Build Status](https://github.com/cisagov/cyhy-users-non-admin/workflows/build/badge.svg)](https://github.com/cisagov/cyhy-users-non-admin/actions)
 
-This is a generic skeleton project that can be used to quickly get a
-new [cisagov](https://github.com/cisagov) [Terraform
-module](https://www.terraform.io/docs/modules/index.html) GitHub
-repository started.  This skeleton project contains [licensing
-information](LICENSE), as well as [pre-commit
-hooks](https://pre-commit.com) and
-[GitHub Actions](https://github.com/features/actions) configurations
-appropriate for the major languages that we use.
+This project is used to manage IAM user accounts for non-admin users.
 
-See [here](https://www.terraform.io/docs/modules/index.html) for more
-details on Terraform modules and the standard module structure.
+## Pre-requisites ##
+
+- [Terraform](https://www.terraform.io/) installed on your system.
+- AWS CLI access
+  [configured](https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-files.html)
+  for the appropriate account on your system.
+- An accessible AWS S3 bucket to store Terraform state
+  (specified in [`backend.tf`](backend.tf)).
+- An accessible AWS DynamoDB database to store the Terraform state lock
+  (specified in [`backend.tf`](backend.tf)).
 
 ## Usage ##
 
-```hcl
-module "example" {
-  source = "github.com/cisagov/cyhy-users-non-admin"
+1. Create a Terraform workspace (if you haven't already done so) by running
+   `terraform workspace new <workspace_name>`
+1. Create a `<workspace_name>.tfvars` file with all of the required
+   variables (see [Inputs](#Inputs) below for details):
 
-  aws_region            = "us-west-1"
-  aws_availability_zone = "b"
-  subnet_id             = "subnet-0123456789abcdef0"
-}
-```
-
-## Examples ##
-
-- [Basic usage](https://github.com/cisagov/cyhy-users-non-admin/tree/develop/examples/basic_usage)
+   ```hcl
+   users = {
+     "firstname1.lastname1" = { "require_mfa" = false, "self_managed" = true },
+     "firstname2.lastname2" = { "require_mfa" = true, "self_managed" = true },
+     "firstname3.lastname3" = { "require_mfa" = false, "self_managed" = true },
+     "service-account1"     = { "require_mfa" = false, "self_managed" = false },
+   }
+   ```
 
 ## Requirements ##
 
@@ -51,41 +52,34 @@ No modules.
 
 | Name | Type |
 |------|------|
-| [aws_instance.example](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/instance) | resource |
-| [aws_ami.example](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/ami) | data source |
-| [aws_default_tags.default](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/default_tags) | data source |
+| [aws_iam_policy.self_managed_creds_with_mfa](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_policy) | resource |
+| [aws_iam_policy.self_managed_creds_without_mfa](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_policy) | resource |
+| [aws_iam_user.users](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_user) | resource |
+| [aws_iam_user_policy_attachment.self_managed_creds_with_mfa](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_user_policy_attachment) | resource |
+| [aws_iam_user_policy_attachment.self_managed_creds_without_mfa](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_user_policy_attachment) | resource |
+| [aws_iam_policy_document.self_managed_creds_with_mfa](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document) | data source |
+| [aws_iam_policy_document.self_managed_creds_without_mfa](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document) | data source |
 
 ## Inputs ##
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
-| ami\_owner\_account\_id | The ID of the AWS account that owns the Example AMI, or "self" if the AMI is owned by the same account as the provisioner. | `string` | `"self"` | no |
-| aws\_availability\_zone | The AWS availability zone to deploy into (e.g. a, b, c, etc.). | `string` | `"a"` | no |
-| aws\_region | The AWS region to deploy into (e.g. us-east-1). | `string` | `"us-east-1"` | no |
-| subnet\_id | The ID of the AWS subnet to deploy into (e.g. subnet-0123456789abcdef0). | `string` | n/a | yes |
+| aws\_region | The AWS region where the non-global resources are to be provisioned (e.g. "us-east-1"). | `string` | `"us-east-1"` | no |
+| self\_managed\_creds\_with\_mfa\_policy\_description | The description to associate with the IAM policy that allows users to administer their own user accounts, requiring multi-factor authentication (MFA). | `string` | `"Allows sufficient access for users to administer their own user accounts, requiring multi-factor authentication (MFA)."` | no |
+| self\_managed\_creds\_with\_mfa\_policy\_name | The name to assign the IAM policy that allows users to administer their own user accounts, requiring multi-factor authentication (MFA). | `string` | `"SelfManagedCredsWithMFA"` | no |
+| self\_managed\_creds\_without\_mfa\_policy\_description | The description to associate with the IAM policy that allows users to administer their own user accounts, without requiring multi-factor authentication (MFA). | `string` | `"Allows sufficient access for users to administer their own user accounts, without requiring multi-factor authentication (MFA)."` | no |
+| self\_managed\_creds\_without\_mfa\_policy\_name | The name to assign the IAM policy that allows users to administer their own user accounts, without requiring multi-factor authentication (MFA). | `string` | `"SelfManagedCredsWithoutMFA"` | no |
+| tags | Tags to apply to all AWS resources created. | `map(string)` | `{}` | no |
+| users | A map whose keys are the usernames of each non-admin user and whose values are a map containing supported user attributes. The currently-supported attributes are "require\_mfa" (boolean) and "self\_managed" (boolean). Example: { "firstname1.lastname1" = { "require\_mfa" = false, "self\_managed" = true }, "firstname2.lastname2" = { "require\_mfa" = true, "self\_managed" = true }, "firstname3.lastname3" = { "require\_mfa" = false, "self\_managed" = true }, "service-account1" = { "require\_mfa" = false, "self\_managed" = false } } | `map(object({ require_mfa = bool, self_managed = bool }))` | n/a | yes |
 
 ## Outputs ##
 
-| Name | Description |
-|------|-------------|
-| arn | The EC2 instance ARN. |
-| availability\_zone | The AZ where the EC2 instance is deployed. |
-| id | The EC2 instance ID. |
-| private\_ip | The private IP of the EC2 instance. |
-| subnet\_id | The ID of the subnet where the EC2 instance is deployed. |
+No outputs.
 
 ## Notes ##
 
 Running `pre-commit` requires running `terraform init` in every directory that
-contains Terraform code. In this repository, these are the main directory and
-every directory under `examples/`.
-
-## New Repositories from a Skeleton ##
-
-Please see our [Project Setup guide](https://github.com/cisagov/development-guide/tree/develop/project_setup)
-for step-by-step instructions on how to start a new repository from
-a skeleton. This will save you time and effort when configuring a
-new repository!
+contains Terraform code. In this repository, this is only the main directory.
 
 ## Contributing ##
 
