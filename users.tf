@@ -1,12 +1,12 @@
 # The non-admin users being created
 resource "aws_iam_user" "users" {
-  for_each = toset(concat(keys(var.users), var.non_self_admin_users))
+  for_each = toset(keys(var.users))
 
   name = each.value
 }
 
 # Attach the self-administration (with MFA required) policy to each user
-# where require_mfa is true
+# where self_managed is true and require_mfa is true
 resource "aws_iam_user_policy_attachment" "self_managed_creds_with_mfa" {
   # Ensure that the user exists before attempting to attach the
   # policy.  Ideally the depends_on could live inside the scope of the
@@ -17,14 +17,14 @@ resource "aws_iam_user_policy_attachment" "self_managed_creds_with_mfa" {
   # created before _any_ policy attachments.
   depends_on = [aws_iam_user.users]
 
-  for_each = { for k, v in var.users : k => v if v["require_mfa"] }
+  for_each = { for k, v in var.users : k => v if v["self_managed"] && v["require_mfa"] }
 
   user       = each.key
   policy_arn = aws_iam_policy.self_managed_creds_with_mfa.arn
 }
 
 # Attach the self-administration (without MFA required) policy to each user
-# where require_mfa is false
+# where self_managed is true and require_mfa is false
 resource "aws_iam_user_policy_attachment" "self_managed_creds_without_mfa" {
   # Ensure that the user exists before attempting to attach the
   # policy.  Ideally the depends_on could live inside the scope of the
@@ -35,7 +35,7 @@ resource "aws_iam_user_policy_attachment" "self_managed_creds_without_mfa" {
   # created before _any_ policy attachments.
   depends_on = [aws_iam_user.users]
 
-  for_each = { for k, v in var.users : k => v if !v["require_mfa"] }
+  for_each = { for k, v in var.users : k => v if v["self_managed"] && !v["require_mfa"] }
 
   user       = each.key
   policy_arn = aws_iam_policy.self_managed_creds_without_mfa.arn
