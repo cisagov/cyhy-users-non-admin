@@ -23,6 +23,9 @@ This project is used to manage IAM user accounts for non-admin users.
    variables (see [Inputs](#inputs) below for details):
 
    ```hcl
+   self_managed_creds_with_mfa_policy_arn    = "arn:aws:iam:123456789012:aws:policy/SelfManagedCredsWithMFA"
+   self_managed_creds_without_mfa_policy_arn = "arn:aws:iam:123456789012:aws:policy/SelfManagedCredsWithoutMFA"
+
    users = {
      "firstname1.lastname1" = { "require_mfa" = false, "self_managed" = true },
      "firstname2.lastname2" = { "require_mfa" = true, "self_managed" = true },
@@ -53,23 +56,17 @@ No modules.
 
 | Name | Type |
 |------|------|
-| [aws_iam_policy.self_managed_creds_with_mfa](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_policy) | resource |
-| [aws_iam_policy.self_managed_creds_without_mfa](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_policy) | resource |
 | [aws_iam_user.users](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_user) | resource |
 | [aws_iam_user_policy_attachment.self_managed_creds_with_mfa](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_user_policy_attachment) | resource |
 | [aws_iam_user_policy_attachment.self_managed_creds_without_mfa](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_user_policy_attachment) | resource |
-| [aws_iam_policy_document.self_managed_creds_with_mfa](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document) | data source |
-| [aws_iam_policy_document.self_managed_creds_without_mfa](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document) | data source |
 
 ## Inputs ##
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
 | aws\_region | The AWS region where the non-global resources are to be provisioned (e.g. "us-east-1"). | `string` | `"us-east-1"` | no |
-| self\_managed\_creds\_with\_mfa\_policy\_description | The description to associate with the IAM policy that allows users to administer their own user accounts, requiring multi-factor authentication (MFA). | `string` | `"Allows sufficient access for users to administer their own user accounts, requiring multi-factor authentication (MFA)."` | no |
-| self\_managed\_creds\_with\_mfa\_policy\_name | The name to assign the IAM policy that allows users to administer their own user accounts, requiring multi-factor authentication (MFA). | `string` | `"SelfManagedCredsWithMFA"` | no |
-| self\_managed\_creds\_without\_mfa\_policy\_description | The description to associate with the IAM policy that allows users to administer their own user accounts, without requiring multi-factor authentication (MFA). | `string` | `"Allows sufficient access for users to administer their own user accounts, without requiring multi-factor authentication (MFA)."` | no |
-| self\_managed\_creds\_without\_mfa\_policy\_name | The name to assign the IAM policy that allows users to administer their own user accounts, without requiring multi-factor authentication (MFA). | `string` | `"SelfManagedCredsWithoutMFA"` | no |
+| self\_managed\_creds\_with\_mfa\_policy\_arn | The ARN for the IAM policy that allows users to administer their own user accounts, requiring multi-factor authentication (MFA). | `string` | n/a | yes |
+| self\_managed\_creds\_without\_mfa\_policy\_arn | The ARN for the IAM policy that allows users to administer their own user accounts, without requiring multi-factor authentication (MFA). | `string` | n/a | yes |
 | tags | Tags to apply to all AWS resources created. | `map(string)` | `{}` | no |
 | users | A map whose keys are the usernames of each non-admin user and whose values are a map containing supported user attributes. The currently-supported attributes are "require\_mfa" (boolean) and "self\_managed" (boolean). Example: { "firstname1.lastname1" = { "require\_mfa" = false, "self\_managed" = true }, "firstname2.lastname2" = { "require\_mfa" = true, "self\_managed" = true }, "firstname3.lastname3" = { "require\_mfa" = false, "self\_managed" = true }, "service-account1" = { "require\_mfa" = false, "self\_managed" = false } } | `map(object({ require_mfa = bool, self_managed = bool }))` | n/a | yes |
 

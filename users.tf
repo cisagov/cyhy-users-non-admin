@@ -20,7 +20,7 @@ resource "aws_iam_user_policy_attachment" "self_managed_creds_with_mfa" {
   for_each = { for k, v in var.users : k => v if v["self_managed"] && v["require_mfa"] }
 
   user       = each.key
-  policy_arn = aws_iam_policy.self_managed_creds_with_mfa.arn
+  policy_arn = var.self_managed_creds_with_mfa_policy_arn
 }
 
 # Attach the self-administration (without MFA required) policy to each user
@@ -38,5 +38,5 @@ resource "aws_iam_user_policy_attachment" "self_managed_creds_without_mfa" {
   for_each = { for k, v in var.users : k => v if v["self_managed"] && !v["require_mfa"] }
 
   user       = each.key
-  policy_arn = aws_iam_policy.self_managed_creds_without_mfa.arn
+  policy_arn = var.self_managed_creds_without_mfa_policy_arn
 }
