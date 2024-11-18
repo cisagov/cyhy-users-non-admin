@@ -36,7 +36,7 @@ This project is used to manage IAM user accounts for non-admin users.
 
 | Name | Version |
 |------|---------|
-| terraform | ~> 1.0 |
+| terraform | ~> 1.1 |
 | aws | ~> 4.9 |
 
 ## Providers ##
