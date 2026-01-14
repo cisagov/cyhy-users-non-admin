@@ -1,6 +1,8 @@
 # cyhy-users-non-admin #
 
 [![GitHub Build Status](https://github.com/cisagov/cyhy-users-non-admin/workflows/build/badge.svg)](https://github.com/cisagov/cyhy-users-non-admin/actions)
+[![License](https://img.shields.io/github/license/cisagov/cyhy-users-non-admin)](https://spdx.org/licenses/)
+[![CodeQL](https://github.com/cisagov/cyhy-users-non-admin/workflows/CodeQL/badge.svg)](https://github.com/cisagov/cyhy-users-non-admin/actions/workflows/codeql-analysis.yml)
 
 This project is used to manage IAM user accounts for non-admin users.
 
