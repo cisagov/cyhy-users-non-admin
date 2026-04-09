@@ -37,14 +37,14 @@ This project is used to manage IAM user accounts for non-admin users.
 ## Requirements ##
 
 | Name | Version |
-|------|---------|
+| ---- | ------- |
 | terraform | ~> 1.1 |
 | aws | ~> 4.9 |
 
 ## Providers ##
 
 | Name | Version |
-|------|---------|
+| ---- | ------- |
 | aws | ~> 4.9 |
 
 ## Modules ##
@@ -54,7 +54,7 @@ No modules.
 ## Resources ##
 
 | Name | Type |
-|------|------|
+| ---- | ---- |
 | [aws_iam_policy.self_managed_creds_with_mfa](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_policy) | resource |
 | [aws_iam_policy.self_managed_creds_without_mfa](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_policy) | resource |
 | [aws_iam_user.users](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_user) | resource |
@@ -66,7 +66,7 @@ No modules.
 ## Inputs ##
 
 | Name | Description | Type | Default | Required |
-|------|-------------|------|---------|:--------:|
+| ---- | ----------- | ---- | ------- | :------: |
 | aws\_region | The AWS region where the non-global resources are to be provisioned (e.g. "us-east-1"). | `string` | `"us-east-1"` | no |
 | self\_managed\_creds\_with\_mfa\_policy\_description | The description to associate with the IAM policy that allows users to administer their own user accounts, requiring multi-factor authentication (MFA). | `string` | `"Allows sufficient access for users to administer their own user accounts, requiring multi-factor authentication (MFA)."` | no |
 | self\_managed\_creds\_with\_mfa\_policy\_name | The name to assign the IAM policy that allows users to administer their own user accounts, requiring multi-factor authentication (MFA). | `string` | `"SelfManagedCredsWithMFA"` | no |
